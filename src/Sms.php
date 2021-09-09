@@ -17,7 +17,7 @@ class Sms
     /**
      * __construct
      *
-     * @param string $api
+     * @param string $token
      * @param string $originator
      */
     public function __construct($token,$originator)
