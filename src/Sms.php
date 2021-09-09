@@ -44,6 +44,10 @@ class Sms
 
     public function send()
     {
+        if(is_null($this->param))
+        {
+            return null;
+        }
         try {
             $client = new Client();
             $response = $client->request('POST', 'https://ippanel.com/services.jspd', $this->param);
