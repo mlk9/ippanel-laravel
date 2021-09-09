@@ -1,5 +1,10 @@
 # IPPanel Laravel
 This package makes it easy to send SMS notification using IPPanel API with Laravel.
+# Requiremnt
+- Laravel 6+
+# Features
+- Very simple and fast
+- Restful api connection
 # Installation
 You can install the package via composer:
 ```sh
@@ -14,6 +19,8 @@ composer require mlk9/ippanel-laravel
 ],
 ```
 # Usage
+append ```'sms'``` to via return in notification.
+Then use `toSms` function like this:
 ```sh
 class ExampleNotification extends Notification
 {
