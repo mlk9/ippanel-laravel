@@ -31,7 +31,7 @@ class Sms
         return $this;
     } 
 
-    public function patternMessage($message,$code,$data = [],$to = [])
+    public function patternMessage($code,$data = [],$to = [])
     {
         $this->param = array_merge($this->connection,[
             'to'=>json_encode($this->integerToString($to)),
