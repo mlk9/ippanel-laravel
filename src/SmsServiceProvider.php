@@ -21,7 +21,7 @@ class SmsServiceProvider extends ServiceProvider
             ->needs(Sms::class)
             ->give(static function () {
                 return new Sms(
-                    config('services.ippanel.api'),
+                    config('services.ippanel.token'),
                     config('services.ippanel.originator'),
                 );
             });
@@ -36,7 +36,7 @@ class SmsServiceProvider extends ServiceProvider
         Notification::resolved(function (ChannelManager $service) {
             $service->extend('sms', function ($app) {
                 return new SmsChannel(new Sms(
-                    config('services.ippanel.api'),
+                    config('services.ippanel.token'),
                     config('services.ippanel.originator'),
                 ));
             });
