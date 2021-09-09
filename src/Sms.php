@@ -115,19 +115,37 @@ class Sms
      * integerToString function
      *
      * @param array $array
-     * @return void
+     * @return string|array
      */
     private function integerToString($array=[])
     {
         if(!is_array($array))
         {
-            return strval($array);
+            return $this->convertNumbers(strval($array));
         }
         $newArray = [];
         foreach ($array as $key => $value) {
-            $newArray[$key] = strval($value);
+            $newArray[$key] = $this->convertNumbers(strval($value));
         }
         return $newArray;
     }
+    /**
+     * convertNumbers function (fa and ar to en)
+     *
+     * @param string $string
+     * @return string
+     */
+    private function convertNumbers($string="")
+    {
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $arabic = ['٩', '٨', '٧', '٦', '٥', '٤', '٣', '٢', '١','٠'];
+
+        $num = range(0, 9);
+        $convertedPersianNums = str_replace($persian, $num, $string);
+        $englishNumbersOnly = str_replace($arabic, $num, $convertedPersianNums);
+
+        return $englishNumbersOnly;
+    }
+
 
 }
