@@ -1,2 +1,2 @@
-# IrSMS Laravel
-Send SMS notification based on channel Laravel (Iranian SMS service)
+# Ippanel Laravel
+Send SMS notification based on channel Laravel (Ippanel SMS service)
