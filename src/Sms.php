@@ -20,10 +20,10 @@ class Sms
      * @param string $api
      * @param string $originator
      */
-    public function __construct($api,$originator)
+    public function __construct($token,$originator)
     {
         $this->connection = [
-            'api'=>$api,
+            'token'=>$token,
             'originator'=>$originator,
         ];
 
@@ -84,9 +84,9 @@ class Sms
         {
             throw new \Exception('param not isset');
         }
-        if(is_null($this->connection['api']))
+        if(is_null($this->connection['token']))
         {
-            throw new \Exception('please configure api');
+            throw new \Exception('please configure token');
         }
         if(is_null($this->connection['originator']))
         {
@@ -96,7 +96,7 @@ class Sms
             $client = new Client();
             $response = $client->request($this->method, $this->endpoint.$this->uri, [
                 'headers' => [
-                    'Authorization' => 'AccessKey '.$this->connection['api'],
+                    'Authorization' => 'AccessKey '.$this->connection['token'],
                 ],
                 'json' =>  $this->param,
 
