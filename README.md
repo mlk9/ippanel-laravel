@@ -1,6 +1,6 @@
 # IPPanel Laravel
 This package makes it easy to send SMS notification using IPPanel API with Laravel.
-# Requiremnt
+# Requirement
 - Laravel 6+
 # Features
 - Very simple and fast
