@@ -25,7 +25,7 @@ class Sms
     public function message($message,$to = [])
     {
         $this->param = array_merge($this->connection,[
-            'to'=>json_encode($to),
+            'to'=>json_encode($this->integerToString($to)),
             'op'=>'send',
         ]);
         return $this;
@@ -34,9 +34,9 @@ class Sms
     public function patternMessage($message,$code,$data = [],$to = [])
     {
         $this->param = array_merge($this->connection,[
-            'to'=>json_encode($to),
+            'to'=>json_encode($this->integerToString($to)),
             'pattern_code'=>$code,
-            'input_data'=>$data,
+            'input_data'=>json_encode($data),
             'op'=>'sendPattern',
         ]);
         return $this;
@@ -60,5 +60,14 @@ class Sms
 
         return null;
     } 
+
+    private function integerToString($array=[])
+    {
+        $newArray = [];
+        foreach ($array as $key => $value) {
+            $newArray[$key] = strval($value);
+        }
+        return $newArray;
+    }
 
 }
