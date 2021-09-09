@@ -28,18 +28,25 @@ class ExampleNotification extends Notification
     {
         return ['sms'];
     }
-
-    public function toSms($notifiable)
-    {
+//for pattern sms
+public function toSms($notifiable)
+        {
         return [
             'type' => 'patternMessage',
-            'code' => config('services.sms.res_ticket'),
-            'values' => ['name'=>$notifiable->name],
-            'recipient'=>  $notifiable->phone,
+            'code' => 'YOUR CODE PATTERN',//string
+            'values' => ['name'=>$notifiable->name],//array
+            'recipient'=>  $notifiable->phone,//string
         ];
     }
-
-}
+//for simple sms
+//    public function toSms($notifiable)
+//    {
+//        return [
+//            'type' => 'message',
+//            'message' => 'YOUR MESSAGE',
+//            'recipient'=>  [$notifiable->phone], // shoud be arrray
+//        ];
+//     }
 
 
 ```
