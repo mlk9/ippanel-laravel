@@ -21,7 +21,7 @@ class SmsServiceProvider extends ServiceProvider
             ->needs(Sms::class)
             ->give(static function () {
                 return new Sms(
-                    config('services.ippanel.username'),
+                    config('services.ippanel.api'),
                     config('services.ippanel.originator'),
                 );
             });
