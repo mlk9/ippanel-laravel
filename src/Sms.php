@@ -46,7 +46,7 @@ class Sms
     {
         if(is_null($this->param))
         {
-            return null;
+            throw new \Exception('param not isset');
         }
         try {
             $client = new Client();
@@ -55,10 +55,10 @@ class Sms
         }
         catch (RequestException $e) 
         {   
-            return $e;
+            throw $e;
         }
 
-        return null;
+        throw new \Exception('param not isset');
     } 
 
     private function integerToString($array=[])
