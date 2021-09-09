@@ -1,6 +1,6 @@
 <?php
 
-namespace Mlk9\Sms\Sms;
+namespace Mlk9\Sms;
 
 use Illuminate\Notifications\Notification;
 
@@ -33,8 +33,28 @@ class SmsChannel
      * @throws CouldNotSendNotification
      * @return null|array
      */
-    public function send($notifiable, Notification $notification): ?array
+    public function send($notifiable, Notification $notification)
     {
-        
+        if(!method_exists($notification,'toSms'))
+        {
+            throw new \Exception('toSms class not exist !');
+        }
+        $data = $notification->toSms($notifiable);
+
+        try {
+
+            switch($data['type']){
+                case 'message':
+                    return $this->Sms->message($data['message'], $data['to'])->send();
+                    break;
+                case 'patternMessage':
+                    return $this->Sms->patternMessage($data['code'], $data['data'],$data['to'])->send();
+                    break;
+            }
+        }
+        catch(\Exception $e)
+        {
+            throw $e;
+        }
     }
 }
