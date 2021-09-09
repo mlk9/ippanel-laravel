@@ -8,37 +8,44 @@ use GuzzleHttp\Exception\RequestException;
 
 class Sms
 {
+    protected $endpoint = 'http://rest.ippanel.com';
+    protected $uri;
     protected $connection;
     protected $param;
+    protected $method;
 
-    public function __construct($username,$password,$from)
+    public function __construct($api,$originator)
     {
         $this->connection = [
-            'uname'=>$username,
-            'pass'=>$password,
-            'from'=>$from,
+            'api'=>$api,
+            'originator'=>$originator,
         ];
 
         return $this;
     }
 
-    public function message($message,$to = [])
+    public function message($message,$recipients = [])
     {
-        $this->param = array_merge($this->connection,[
-            'to'=>json_encode($this->integerToString($to)),
-            'op'=>'send',
-        ]);
+        $this->param =[
+            'recipients'=>$this->integerToString($recipients),
+            'message'=>'message',
+            'originator'=>$this->connection['originator'],
+        ];
+        $this->uri = '/v1/messages';
+        $this->method = 'POST';
         return $this;
     } 
 
-    public function patternMessage($code,$data = [],$to = [])
+    public function patternMessage($code,$values = [],$recipient)
     {
-        $this->param = array_merge($this->connection,[
-            'to'=>json_encode($this->integerToString($to)),
+        $this->param = [
+            'recipient'=>$this->integerToString($recipient),
             'pattern_code'=>$code,
-            'input_data'=>json_encode($data),
-            'op'=>'sendPattern',
-        ]);
+            'values'=>$values,
+            'originator'=>$this->connection['originator'],
+        ];
+        $this->uri = '/v1/messages/patterns/send';
+        $this->method = 'POST';
         return $this;
     } 
 
@@ -50,7 +57,13 @@ class Sms
         }
         try {
             $client = new Client();
-            $response = $client->request('POST', 'https://ippanel.com/services.jspd', $this->param);
+            $response = $client->request($this->method, $this->endpoint.$this->uri, [
+                'headers' => [
+                    'Authorization' => 'AccessKey '.$this->connection['api'],
+                ],
+                'json' =>  $this->param,
+
+            ]);
             return $response;
         }
         catch (RequestException $e) 
@@ -63,6 +76,10 @@ class Sms
 
     private function integerToString($array=[])
     {
+        if(!is_array($array))
+        {
+            return strval($array);
+        }
         $newArray = [];
         foreach ($array as $key => $value) {
             $newArray[$key] = strval($value);

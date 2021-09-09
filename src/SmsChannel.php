@@ -45,10 +45,10 @@ class SmsChannel
 
             switch($data['type']){
                 case 'message':
-                    return $this->Sms->message($data['message'], $data['to'])->send();
+                    return $this->Sms->message($data['message'], $data['recipients'])->send();
                     break;
                 case 'patternMessage':
-                    return $this->Sms->patternMessage($data['code'], $data['data'],$data['to'])->send();
+                    return $this->Sms->patternMessage($data['code'], $data['values'],$data['recipient'])->send();
                     break;
             }
         }

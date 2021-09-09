@@ -25,5 +25,8 @@
                 "Mlk9\\Sms\\SmsServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.3"
     }
 }
