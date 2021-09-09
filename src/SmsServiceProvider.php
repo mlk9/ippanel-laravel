@@ -3,6 +3,10 @@
 namespace Mlk9\Sms;
 
 use Illuminate\Support\ServiceProvider;
+use Mlk9\Sms\SmsChannel;
+use Mlk9\Sms\Sms;
+use Illuminate\Notifications\ChannelManager;
+use Illuminate\Support\Facades\Notification;
 
 class SmsServiceProvider extends ServiceProvider
 {
@@ -13,7 +17,15 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
+        $this->app->when(SmsChannel::class)
+            ->needs(Sms::class)
+            ->give(static function () {
+                return new Sms(
+                    config('services.ippanel.username'),
+                    config('services.ippanel.password'),
+                    config('services.ippanel.from'),
+                );
+            });
     }
     /**
      * Boot any application services.
@@ -22,7 +34,16 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        
+        Notification::resolved(function (ChannelManager $service) {
+            $service->extend('sms', function ($app) {
+                return new SmsChannel(new Sms(
+                    config('services.ippanel.username'),
+                    config('services.ippanel.password'),
+                    config('services.ippanel.from'),
+                ));
+            });
+        });
+    
     }
 
 }
