@@ -45,7 +45,7 @@ class SmsChannel
 
             switch($data['type']){
                 case 'message':
-                    return $this->Sms->message($data['message'], $data['recipients'])->send();
+                    return $this->Sms->message($data['message'], $data['recipient'])->send();
                     break;
                 case 'patternMessage':
                     return $this->Sms->patternMessage($data['code'], $data['values'],$data['recipient'])->send();
