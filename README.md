@@ -1,31 +1,33 @@
 # IPPanel Laravel
 
-This package makes it easy to send SMS notification using IPPanel API with Laravel.
+پکیج لاراولی ارسال اس ام اس سازگار با نوتیفیکیشن برای آپی پنل
 
-# Requirement
+# نیازمندی ها
 
-- Laravel 6+
+- لاراول 6+
+- PHP 7.4+
 
-# Features
+# ویژگی ها
 
-- Very simple and fast
-- Restful api connection
+- سریع و ساده
+- اتصال امن 
+- سازگار با نوتیفیکیشن
 
-# Installation
+# نصب
 
-You can install the package via composer:
+نصب پکیج به وسیله کامپوزر:
 
 ```sh
 composer require mlk9/ippanel-laravel
 ```
 
-then publish vendor
+عمومی کردن تنظیمات 
 
 ```sh
 php artisan vendor:publish --tag=ippanel-laravel
 ```
 
-# Setting up your IPPanel
+# جزئیات دقیق کانفیگ
 
 ```sh
 // config/services.php
@@ -37,9 +39,9 @@ php artisan vendor:publish --tag=ippanel-laravel
 ],
 ```
 
-# Usage
+# استفاده
 
-## Facade
+## با استفاده از فساد
 
 ```
 <?php
@@ -52,10 +54,10 @@ Sms::sendMessage(string $text,array|string $recipients); // bool
 Sms::sendPatternMessage(string $code_pattern,string $recipient,array $entries = []);// bool
 ```
 
-## Notification
+## با استفاده از نوتیفیکیشن لاراول
 
-append `'sms'` to via return in notification.
-Then use `toSms` function like this:
+افزودن `'sms'` به نوتیفیکیشن مد نظر
+و ایجاد فانکشن `toSms` به این شکل :
 
 ```sh
 class ExampleNotification extends Notification
