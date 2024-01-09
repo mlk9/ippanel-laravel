@@ -2,7 +2,6 @@
     "name": "mlk9/ippanel-laravel",
     "description": "Send SMS notification based on channel Laravel (Ippanel SMS service)",
     "license": "MIT",
-    "type": "project",
     "authors": [
         {
             "name": "Mohammad Maleki",
@@ -14,18 +13,28 @@
             "Mlk9\\Sms\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Mlk9\\SmsPackage\\Tests\\": "tests"
+        }
+    },
     "require": {
-        "php": ">=7.1.3",
+        "php": ">=7.4",
         "illuminate/support": ">=6"
     },
     "extra": {
         "laravel": {
             "providers": [
                 "Mlk9\\Sms\\SmsServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Setting": "Mlk9\\Sms\\Facades\\Sms"
+            }
         }
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^7.3"
+        "guzzlehttp/guzzle": ">=7",
+        "phpunit/phpunit": ">=9",
+        "orchestra/testbench": ">=4"
     }
 }

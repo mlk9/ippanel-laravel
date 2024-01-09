@@ -8,137 +8,56 @@ use GuzzleHttp\Exception\RequestException;
 
 class Sms
 {
-    protected $endpoint = 'http://rest.ippanel.com';//ippanel rest server
-    protected $uri;
-    protected $connection;
-    protected $param;
-    protected $method;
-
-    /**
-     * __construct
-     *
-     * @param string $token
-     * @param string $originator
-     */
-    public function __construct($token,$originator)
+    private function sendRequest($param)
     {
-        $this->connection = [
-            'token'=>$token,
-            'originator'=>$originator,
+        $server = config('ippanel.server', 'https://ippanel.com/services.jspd');
+        $authorization = [
+            'uname' => config('ippanel.username', null),
+            'pass' => config('ippanel.password', null),
         ];
-
-        return $this;
-    }
-
-    /**
-     * message function
-     *
-     * @param string $message
-     * @param array $recipients
-     * @return void
-     */
-    public function message($message="",$recipients = [])
-    {
-        $this->uri = '/v1/messages';
-        $this->method = 'POST';
-        $this->param =[
-            'recipients'=>$this->integerToString($recipients),
-            'message'=> $message,
-            'originator'=>$this->connection['originator'],
-        ];
-        
-        return $this;
-    } 
-
-    /**
-     * patternMessage function
-     *
-     * @param string $code
-     * @param array $values
-     * @param integer $recipient
-     * @return void
-     */
-    public function patternMessage($code="",$values = [],$recipient=0)
-    {
-        $this->uri = '/v1/messages/patterns/send';
-        $this->method = 'POST';
-
-        $this->param = [
-            'recipient'=>$this->integerToString($recipient),
-            'pattern_code'=>$code,
-            'values'=>$values,
-            'originator'=>$this->connection['originator'],
-        ];
-        
-        return $this;
-    } 
-
-    /**
-     * send function
-     *
-     * @return void
-     */
-    public function send()
-    {
-        if(is_null($this->param))
-        {
-            throw new \Exception('param not isset');
-        }
-        if(is_null($this->connection['token']))
-        {
-            throw new \Exception('please configure token');
-        }
-        if(is_null($this->connection['originator']))
-        {
-            throw new \Exception('please configure originator');
-        }
         try {
             $client = new Client();
-            $response = $client->request($this->method, $this->endpoint.$this->uri, [
-                'headers' => [
-                    'Authorization' => 'AccessKey '.$this->connection['token'],
-                ],
-                'json' =>  $this->param,
-
+            $response = $client->request('POST', $server, [
+                'form_params' =>  array_merge($authorization, $param),
+                'verify' => false
             ]);
-            return $response;
-        }
-        catch (RequestException $e) 
-        {   
+
+            $body = $response->getBody();
+            $remainingBytes = $body->getContents();
+            return $remainingBytes;
+        } catch (RequestException $e) {
             throw $e;
         }
-
-        throw new \Exception('param not isset');
-    } 
+    }
 
     /**
      * integerToString function
      *
-     * @param array $array
+     * @param array|string $data
      * @return string|array
      */
-    private function integerToString($array=[])
+    private function integerToString($data)
     {
-        if(!is_array($array))
-        {
-            return $this->convertNumbers(strval($array));
+        if (!is_array($data)) {
+            return $this->convertNumbers(strval($data));
         }
         $newArray = [];
-        foreach ($array as $key => $value) {
+        foreach ($data as $key => $value) {
             $newArray[$key] = $this->convertNumbers(strval($value));
         }
         return $newArray;
     }
+
     /**
      * convertNumbers function (fa and ar to en)
      *
      * @param string $string
      * @return string
      */
-    private function convertNumbers($string="")
+    private function convertNumbers($string = "")
     {
         $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        $arabic = ['٩', '٨', '٧', '٦', '٥', '٤', '٣', '٢', '١','٠'];
+        $arabic = ['٩', '٨', '٧', '٦', '٥', '٤', '٣', '٢', '١', '٠'];
 
         $num = range(0, 9);
         $convertedPersianNums = str_replace($persian, $num, $string);
@@ -147,5 +66,56 @@ class Sms
         return $englishNumbersOnly;
     }
 
+    public function getCredit()
+    {
+        $param = [
+            'op' => 'credit',
+        ];
 
+        try {
+            $response = $this->sendRequest($param);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return json_decode($response)[1];
+    }
+
+    public function sendMessage($text, $recipients)
+    {
+        if (is_array($recipients) === false) {
+            $recipients = [$recipients];
+        }
+        $param = [
+            'op' => 'send',
+            'from' => config('ippanel.originator', null),
+            'message' => $text,
+            'to' => json_encode($this->integerToString($recipients)),
+        ];
+        try {
+            $this->sendRequest($param);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function sendPatternMessage($code_pattern, $recipient, $entries = [])
+    {
+        $param = [
+            'op' => 'sendPattern',
+            'from' => config('ippanel.originator', null),
+            'code_pattern' => $code_pattern,
+            'data_input' => json_encode($entries),
+            'to' => $this->integerToString($recipient),
+        ];
+        try {
+            $this->sendRequest($param);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -7,6 +7,7 @@ use Mlk9\Sms\SmsChannel;
 use Mlk9\Sms\Sms;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Notification;
+use Mlk9\Sms\Facades\Sms as FacadesSms;
 
 class SmsServiceProvider extends ServiceProvider
 {
@@ -17,14 +18,8 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->when(SmsChannel::class)
-            ->needs(Sms::class)
-            ->give(static function () {
-                return new Sms(
-                    config('services.ippanel.token'),
-                    config('services.ippanel.originator'),
-                );
-            });
+        $this->mergeConfigFrom(__DIR__.'/../config/ippanel.php', 'ippanel');
+        $this->app->singleton(FacadesSms::class, Sms::class);
     }
     /**
      * Boot any application services.
@@ -35,13 +30,25 @@ class SmsServiceProvider extends ServiceProvider
     {
         Notification::resolved(function (ChannelManager $service) {
             $service->extend('sms', function ($app) {
-                return new SmsChannel(new Sms(
-                    config('services.ippanel.token'),
-                    config('services.ippanel.originator'),
-                ));
+                return new SmsChannel();
             });
         });
-    
+    }
+
+    /**
+     * Setting publishing for the package.
+     *
+     * @return void
+     */
+    protected function settingPublishing() : void
+    {
+        if (!$this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->publishes([
+            __DIR__.'/../config/ippanel.php' => config_path('ippanel.php'),
+        ], 'ippanel-laravel');
     }
 
 }

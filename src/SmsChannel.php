@@ -3,6 +3,7 @@
 namespace Mlk9\Sms;
 
 use Illuminate\Notifications\Notification;
+use Mlk9\Sms\Facades\Sms;
 
 /**
  * Class SmsChannel.
@@ -10,18 +11,11 @@ use Illuminate\Notifications\Notification;
 class SmsChannel
 {
     /**
-     * @var Sms
-     */
-    protected $Sms;
-
-    /**
      * Channel constructor.
      *
-     * @param Sms $Sms
      */
-    public function __construct(Sms $Sms)
+    public function __construct()
     {
-        $this->Sms = $Sms;
     }
 
     /**
@@ -35,25 +29,23 @@ class SmsChannel
      */
     public function send($notifiable, Notification $notification)
     {
-        if(!method_exists($notification,'toSms'))
-        {
+        if (!method_exists($notification, 'toSms')) {
             throw new \Exception('toSms class not exist !');
         }
+
         $data = $notification->toSms($notifiable);
 
         try {
 
-            switch($data['type']){
+            switch ($data['type']) {
                 case 'message':
-                    return $this->Sms->message($data['message'], $data['recipient'])->send();
+                    return Sms::sendMessage($data['message'], $data['recipient']);
                     break;
                 case 'patternMessage':
-                    return $this->Sms->patternMessage($data['code'], $data['values'],$data['recipient'])->send();
+                    return  Sms::sendPatternMessage($data['code'], $data['values'], $data['recipient']);
                     break;
             }
-        }
-        catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
